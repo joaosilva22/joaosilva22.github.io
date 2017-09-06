@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blog on João Pedro Silva</title>
+    <link>https://joaopedrosilva.xyz/blog/</link>
+    <description>Recent content in Blog on João Pedro Silva</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>&amp;copy; 2017 João Pedro Silva</copyright>
+    
+	<atom:link href="https://joaopedrosilva.xyz/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+  </channel>
+</rss>
