@@ -3,11 +3,18 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://joaosilva22.github.io/blog/memory-pool/</loc>
+    <lastmod>2017-09-07T07:40:00+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://joaosilva22.github.io/blog/</loc>
+    <lastmod>2017-09-07T07:40:00+01:00</lastmod>
   </url>
   
   <url>
     <loc>https://joaosilva22.github.io/</loc>
+    <lastmod>2017-09-07T07:40:00+01:00</lastmod>
     <priority>0</priority>
   </url>
   
