@@ -8,8 +8,18 @@
   </url>
   
   <url>
+    <loc>https://joaosilva22.github.io/authors/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://joaosilva22.github.io/blog/</loc>
     <lastmod>2017-09-07T07:40:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://joaosilva22.github.io/categories/</loc>
+    <priority>0</priority>
   </url>
   
   <url>

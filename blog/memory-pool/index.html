@@ -1,76 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="generator" content="Hugo 0.31" />
-		<title>Using a Memory Pool to Speed Up String Manipulation - João Pedro Silva</title>
+<html lang='en'>
 
-		<meta name="description" content="Lately I&rsquo;ve been trying to learn more about code optimization, specifically how to make code faster. I&rsquo;ve been doing this partly out of frustration from having to deal with slow software on a daily basis, and partly out of curiosity after listening to a bunch of talks and lectures about it by a lot of smart people.
-In my research I came accross Agner Fog&rsquo;s Software Optimization Resources, and I&rsquo;ve been slowly making my way through the listed manuals.">
+<head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='Lately I&rsquo;ve been trying to learn more about code optimization, specifically how to make code faster. I&rsquo;ve been doing this partly out of frustration from having to deal with slow software on a daily basis, and partly out of curiosity after listening to a bunch of talks and lectures about it by a lot of smart people.
+In my research I came accross Agner Fog&rsquo;s Software Optimization Resources, and I&rsquo;ve been slowly making my way through the listed manuals.'>
+
+<meta property='og:title' content='Using a Memory Pool to Speed Up String Manipulation • João Pedro Silva'>
+<meta property='og:description' content='Lately I&rsquo;ve been trying to learn more about code optimization, specifically how to make code faster. I&rsquo;ve been doing this partly out of frustration from having to deal with slow software on a daily basis, and partly out of curiosity after listening to a bunch of talks and lectures about it by a lot of smart people.
+In my research I came accross Agner Fog&rsquo;s Software Optimization Resources, and I&rsquo;ve been slowly making my way through the listed manuals.'>
+<meta property='og:url' content='https://joaosilva22.github.io/blog/memory-pool/'>
+<meta property='og:site_name' content='João Pedro Silva'>
+<meta property='og:type' content='article'><meta property='article:section' content='Blog'><meta property='article:published_time' content='2017-09-07T07:40:00&#43;01:00'/><meta property='article:modified_time' content='2017-09-07T07:40:00&#43;01:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.31" />
+
+  <title>Using a Memory Pool to Speed Up String Manipulation • João Pedro Silva</title>
+  <link rel='canonical' href='https://joaosilva22.github.io/blog/memory-pool/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Ubuntu:400,400i,700&subset=latin'>
+<link rel='stylesheet' href='/assets/css/main.77da63e1.css'><link rel='stylesheet' href='/css/custom.css'>
+</head>
 
 
-		
+<body class='page type-blog'>
+  <div class='site'>
 
-		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+    <a class='screen-reader' href='#main'>Skip to Content</a>
 
-		
-		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github-gist.min.css">
-		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-		
-		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/go.min.js"></script>
-		
-		
-
-		
-		<link rel="stylesheet" href="/css/ui.min.css"/>
-		
-		<style>
-	a { color: #ff8181; }
-	blockquote { border-left-color: #ff8181; }
-	.bar a:hover {
-		color: #ff8181;
-		text-decoration: none; }
-	.sep {
-		margin-top: 2rem;
-		margin-bottom: 1rem;
-		margin-left:0;
-		width: 24rem;
-		border-top: 2px solid #ff8181; }
-</style>
-
-	</head>
-
-<body>
-<header class="container">
-	<div class="u-header">
-		<nav class="bar">
-	<ul><li>
-			<a href="/">
-				<img class="icon-text" src="/img/prev.svg"/>
-			</a>
-		</li><li><a href="/blog/">Blog</a></li><li><a href="/resume/">Resume</a></li></ul>
+    <header id='header' class='header-container'>
+      <div class='header site-header'>
+        <nav id='main-menu' class='main-menu-container' aria-label='Main Menu'>
+  <ul class='main-menu'>
+  <li>
+      <a href='https://joaosilva22.github.io/resume'>Resume</a>
+    </li>
+  <li>
+      <a href='/blog/'>Blog</a>
+    </li>
+  <li>
+      <a href='/resume/'>Resume</a>
+    </li>
+  
+  </ul>
 </nav>
 
-	</div>
-</header>
-<main class="container">
+        <div class='header-info'>
+          
+          <p class='site-title title'>João Pedro Silva</p>
+          
+          <p class='site-description subtitle'>Minimalist theme for Hugo</p>
+        </div>
+      </div>
+    </header>
 
-<article>
-	<header><hgroup id="brand">
-	<h1>Using a Memory Pool to Speed Up String Manipulation</h1>
-	<h5>
-		<time datetime="2017-09-07 07:40:00 &#43;0100 WEST">Sep 07, 2017</time>
-		</h5>
-	
-</hgroup>
-<hr class="sep" />
+
+<main id='main' class='main'>
+  <article lang='en' class='entry'>
+    <header class='header-container'>
+  <div class='header entry-header'>
+    <div class='header-info'>
+      <h1 class='title'>Using a Memory Pool to Speed Up String Manipulation</h1>
+      
+
+    </div>
+    
+<div class='meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader'>Posted on </span>
+  <time class='date' datetime='2017-09-07T07:40:00&#43;01:00'>2017, Sep 07</time>
+</span>
+
+  
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+17 mins read
+</span>
+
+
+</div>
+
+
+  </div>
 </header>
-	
+
+    
+    
+
+    <div class='entry-content'>
+  
 
 <p>Lately I&rsquo;ve been trying to learn more about code optimization, specifically how to make code faster. I&rsquo;ve been doing this partly out of frustration from having to deal with slow software on a daily basis, and partly out of curiosity after listening to a bunch of talks and lectures about it by a lot of smart people.</p>
 
-<p>In my research I came accross <a href="http://www.agner.org/optimize/">Agner Fog&rsquo;s Software Optimization Resources</a>, and I&rsquo;ve been slowly making my way through the listed manuals. One of the first concepts I&rsquo;ve come accross while reading <em>&ldquo;Optimizing Software in C++&rdquo;</em> was the notion of memory pooling. This is what <a href="https://en.wikipedia.org/wiki/Memory_pool">Wikipedia</a> has to say about it:</p>
+<p>In my research I came accross <a href="http://www.agner.org/optimize/" target="_blank">Agner Fog&rsquo;s Software Optimization Resources</a>, and I&rsquo;ve been slowly making my way through the listed manuals. One of the first concepts I&rsquo;ve come accross while reading <em>&ldquo;Optimizing Software in C++&rdquo;</em> was the notion of memory pooling. This is what <a href="https://en.wikipedia.org/wiki/Memory_pool" target="_blank">Wikipedia</a> has to say about it:</p>
 
 <blockquote>
 <p>Memory pools [&hellip;] is the use of pools for memory management that allows dynamic memory allocation comparable to malloc or C++&rsquo;s operator new.</p>
@@ -108,55 +145,49 @@ In my research I came accross Agner Fog&rsquo;s Software Optimization Resources,
 <p>In the particular implementation of a <code>StringPool</code> that I&rsquo;ll be going through in this section, each string is identified by a number, or <code>Index</code>. These identifiers don&rsquo;t have to be sequential, but all skipped numbers will be assigned the empty string. Additionaly, the length of each string is stored along it&rsquo;s content, in order to avoid expensive calls to <code>strlen</code>.</p>
 
 <p>The <code>StringPool</code> also supports a small number of operations. Those are <strong>access</strong>, <strong>insertion</strong> and <strong>concatenation</strong>. Basic usage looks like the following:</p>
-
-<pre><code class="language-c++">StringPool Strings;                 // Create a new string pool
-
-Strings.Set(0, &quot;Hey&quot;);              // Inserts string &quot;Hey&quot; at index 0
-Strings.Set(2, &quot;World&quot;);            // Inserts string &quot;World&quot; at index 2
-Strings.Set(0, &quot;Hi&quot;);               // Reassigns index 0 to the string &quot;Hi&quot;
-
-Strings.Get(0);                     // Returns &quot;Hi&quot;
-Strings.Get(1);                     // Returns &quot;&quot;
-Strings.Get(2);                     // Returns &quot;World&quot;
-
-Strings.Concatenate(0, &quot; Rio&quot;);
-Strings.Get(0);                     // Returns &quot;Hi Rio&quot;
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">StringPool Strings;                 <span style="color:#75715e">// Create a new string pool
+</span><span style="color:#75715e"></span>
+Strings.Set(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Hey&#34;</span>);              <span style="color:#75715e">// Inserts string &#34;Hey&#34; at index 0
+</span><span style="color:#75715e"></span>Strings.Set(<span style="color:#ae81ff">2</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;World&#34;</span>);            <span style="color:#75715e">// Inserts string &#34;World&#34; at index 2
+</span><span style="color:#75715e"></span>Strings.Set(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Hi&#34;</span>);               <span style="color:#75715e">// Reassigns index 0 to the string &#34;Hi&#34;
+</span><span style="color:#75715e"></span>
+Strings.Get(<span style="color:#ae81ff">0</span>);                     <span style="color:#75715e">// Returns &#34;Hi&#34;
+</span><span style="color:#75715e"></span>Strings.Get(<span style="color:#ae81ff">1</span>);                     <span style="color:#75715e">// Returns &#34;&#34;
+</span><span style="color:#75715e"></span>Strings.Get(<span style="color:#ae81ff">2</span>);                     <span style="color:#75715e">// Returns &#34;World&#34;
+</span><span style="color:#75715e"></span>
+Strings.Concatenate(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34; Rio&#34;</span>);
+Strings.Get(<span style="color:#ae81ff">0</span>);                     <span style="color:#f92672">//</span> Returns <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;Hi Rio&#34;</span></code></pre></div>
 <p>So let&rsquo;s begin by taking a look at the class declaration. Don&rsquo;t worry too much about what the individual variables and functions mean, as we&rsquo;ll be going over each one in detail. This is just meant to give a general idea of the layout of the class.</p>
-
-<pre><code class="language-c++">class StringPool
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">StringPool</span>
 {
-public:
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
     StringPool();
-    ~StringPool();
-    void Set(int Index, const char * String); // Insert a string
-    const char * Get(int Index); // Access a string
-    void Concatenate(int Index, const char * String); // Concatenate strings
-private:
-    void ReserveNum(unsigned int Size); // Increase size of the offsets buffer
-    void ReserveBuf(unsigned int Size); // Increase size of the strings buffer
-    char * Allocate(int Index, unsigned int Strlen); // Allocate space for a new string
-    unsigned int Len(int Index); // Returns the length of a string
-
-    char * Buffer; // Memory block to store strings
-    char * OldBuffer; // Copy of old buffer for copying strings
-    unsigned int * Offsets; // Offsets to strings
-    unsigned int BufferSize; // Size of the buffer
-    unsigned int OffsetsSize; // Size of the offsets block
-    unsigned int DataSize; // Size of the used part of the buffer, including garbage
-    unsigned int GarbageSize; // Size of the garbage part of the buffer
-    unsigned int Top; // Highest used offset
-    int Num; // Number of strings in the pool
-
-    enum DefineSizes 
+    <span style="color:#f92672">~</span>StringPool();
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Set</span>(<span style="color:#66d9ef">int</span> Index, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> String); <span style="color:#75715e">// Insert a string
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">Get</span>(<span style="color:#66d9ef">int</span> Index); <span style="color:#75715e">// Access a string
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Concatenate</span>(<span style="color:#66d9ef">int</span> Index, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> String); <span style="color:#75715e">// Concatenate strings
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> ReserveNum(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> Size); <span style="color:#75715e">// Increase size of the offsets buffer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ReserveBuf</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> Size); <span style="color:#75715e">// Increase size of the strings buffer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">Allocate</span>(<span style="color:#66d9ef">int</span> Index, <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> Strlen); <span style="color:#75715e">// Allocate space for a new string
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">Len</span>(<span style="color:#66d9ef">int</span> Index); <span style="color:#75715e">// Returns the length of a string
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> Buffer; <span style="color:#75715e">// Memory block to store strings
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> OldBuffer; <span style="color:#75715e">// Copy of old buffer for copying strings
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span> Offsets; <span style="color:#75715e">// Offsets to strings
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> BufferSize; <span style="color:#75715e">// Size of the buffer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> OffsetsSize; <span style="color:#75715e">// Size of the offsets block
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> DataSize; <span style="color:#75715e">// Size of the used part of the buffer, including garbage
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> GarbageSize; <span style="color:#75715e">// Size of the garbage part of the buffer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> Top; <span style="color:#75715e">// Highest used offset
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> Num; <span style="color:#75715e">// Number of strings in the pool
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">enum</span> DefineSizes 
     {
-        AllocateSpaceBuffer = 4096, // Minimum size of the string buffer
-        AllocateSpaceOffsets = 1024, // Minimum size of the offsets buffer
-    };
-};
-</code></pre>
-
+        AllocateSpaceBuffer <span style="color:#f92672">=</span> <span style="color:#ae81ff">4096</span>, <span style="color:#75715e">// Minimum size of the string buffer
+</span><span style="color:#75715e"></span>        AllocateSpaceOffsets <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>, <span style="color:#75715e">// Minimum size of the offsets buffer
+</span><span style="color:#75715e"></span>    };
+};</code></pre></div>
 <p>The most important field of the <code>StringPool</code> class is <code>Buffer</code>. This is the memory block we&rsquo;ll use to store the strings and their length. This block should hold a minimum of <code>4096</code> characters, as defined in <code>AllocateSpaceBuffer</code>. Similarly, the <code>Offsets</code> buffer holds the offset in <code>Buffer</code> for each string. It should hold at least <code>1024</code> integer values, as specified in <code>AllocateSpaceOffsets</code>.</p>
 
 <p>The <code>private</code> member functions <code>ReserveNum</code>, <code>ReserveBuf</code>, <code>Allocate</code> and <code>Len</code> are auxiliary. We&rsquo;ll be going into more detail for each one later in this section. For all the other fields a brief explanaition is provided in the form of a comment.</p>
@@ -164,370 +195,367 @@ private:
 <p>The <code>public</code> member functions <code>Set</code>, <code>Get</code> and <code>Concatenate</code> provide the class interface, as they allow us to manipulate strings in the pool. They are the ones we&rsquo;ll go through first.</p>
 
 <p>But before that, let&rsquo;s take a look at the constructor and the desctructor. They are both very simple, so there is no need to go into much detail for either of them. In the constructor, we just set everything to zero. In the destructor we free the memory blocks allocated for the strings buffer and for the offsets buffer and set everything back to zero.</p>
-
-<pre><code class="language-c++">StringPool::StringPool() 
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">StringPool<span style="color:#f92672">::</span>StringPool() 
 {
-    memset(this, 0, sizeof(*this));
+    memset(<span style="color:#66d9ef">this</span>, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>));
 }
 
-StringPool::~StringPool()
+StringPool<span style="color:#f92672">::~</span>StringPool()
 {
-    if (Buffer) delete[] Buffer;
-    if (OldBuffer) delete[] OldBuffer;
-    if (Offsets) delete[] Offsets;
-    memset(this, 0, sizeof(*this));
-}
-</code></pre>
-
+    <span style="color:#66d9ef">if</span> (Buffer) <span style="color:#66d9ef">delete</span>[] Buffer;
+    <span style="color:#66d9ef">if</span> (OldBuffer) <span style="color:#66d9ef">delete</span>[] OldBuffer;
+    <span style="color:#66d9ef">if</span> (Offsets) <span style="color:#66d9ef">delete</span>[] Offsets;
+    memset(<span style="color:#66d9ef">this</span>, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>));
+}</code></pre></div>
 <p>Now that that is out of the way, let&rsquo;s go through the <code>Set</code> function, meant to insert a string into the pool. Inserting a string into the <code>StringPool</code> involves two steps: copying the string to the strings buffer along with it&rsquo;s length and setting the appropriate offset value in the offsets buffer. Of course, a few checks must be made to check whether the offsets buffer can hold another value, or if the strings buffer can hold the new string. If either is at capacity, then space for the new string must be made by increasing their size.</p>
-
-<pre><code class="language-c++">void
-StringPool::Set(int Index, const char * String)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">void</span>
+StringPool<span style="color:#f92672">::</span>Set(<span style="color:#66d9ef">int</span> Index, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> String)
 {
-    if (Index &lt; 0) return;
+    <span style="color:#66d9ef">if</span> (Index <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">return</span>;
 
-    // If the Index is higher than the any previous index
-    // that means we are inserting a new string into the pool
-    if (Index &gt;= Num)
+    <span style="color:#75715e">// If the Index is higher than the any previous index
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// that means we are inserting a new string into the pool
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (Index <span style="color:#f92672">&gt;=</span> Num)
     {
-        // Update the number of strings in the pool
-        Num = Index + 1;
-        // If the index doesn't fit in the Offsets buffer we must increase it's size
-        if ((unsigned int)Index &gt;= OffsetsSize)
+        <span style="color:#75715e">// Update the number of strings in the pool
+</span><span style="color:#75715e"></span>        Num <span style="color:#f92672">=</span> Index <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+        <span style="color:#75715e">// If the index doesn&#39;t fit in the Offsets buffer we must increase it&#39;s size
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> ((<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>)Index <span style="color:#f92672">&gt;=</span> OffsetsSize)
         {
-            ReserveNum(Index + 1);
+            ReserveNum(Index <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
         }
     }
-    size_t Strlen = 0;
-    if (String) Strlen = strlen(String);
-    // If the length of the new string is zero
-    if (Strlen == 0)
+    size_t Strlen <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#66d9ef">if</span> (String) Strlen <span style="color:#f92672">=</span> strlen(String);
+    <span style="color:#75715e">// If the length of the new string is zero
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (Strlen <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
     {
-        // And there was a string associated with Index
-        if (Offsets[Index])
+        <span style="color:#75715e">// And there was a string associated with Index
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (Offsets[Index])
         {
-            // We clear the string
-            Offsets[Index] = 0;
-            GarbageSize += Len(Index) + 1 + sizeof(unsigned int);
+            <span style="color:#75715e">// We clear the string
+</span><span style="color:#75715e"></span>            Offsets[Index] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+            GarbageSize <span style="color:#f92672">+=</span> Len(Index) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>);
         }
-        return;
+        <span style="color:#66d9ef">return</span>;
     }
 
-    // Otherwise we make space for and store the new string    
-    char * AddressInBuffer = Allocate(Index, Strlen);
-    // The length of the string is stored in the first four bytes
-    *(unsigned int *)AddressInBuffer = (unsigned int)Strlen;
-    memcpy(AddressInBuffer + sizeof(unsigned int), String, Strlen + 1);
+    <span style="color:#75715e">// Otherwise we make space for and store the new string    
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> AddressInBuffer <span style="color:#f92672">=</span> Allocate(Index, Strlen);
+    <span style="color:#75715e">// The length of the string is stored in the first four bytes
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">*</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>)AddressInBuffer <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>)Strlen;
+    memcpy(AddressInBuffer <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>), String, Strlen <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
 
-    if (OldBuffer)
+    <span style="color:#66d9ef">if</span> (OldBuffer)
     {
-        delete[] OldBuffer;
-        OldBuffer = 0;
+        <span style="color:#66d9ef">delete</span>[] OldBuffer;
+        OldBuffer <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
     }
-}
-</code></pre>
-
+}</code></pre></div>
 <p>The <code>Set</code> function makes use of two others that we have as not seen as of yet. Those are <code>ReserveNum</code> and <code>Allocate</code>. For now it&rsquo;s enough to know that <code>ReserveNum</code> increases the number of string offsets that the <code>Offsets</code> buffer can hold, and <code>Allocate</code> makes space for the new string, increasing the size of <code>Buffer</code> if necessary. We&rsquo;ll be going through their implementations in a bit.</p>
 
 <p>Inserting a string is not very useful unless we can access it later. That is what <code>Get</code> is for. The process of fetching a string from the <code>StringPool</code> is very simple. All we need to do is figure out the string&rsquo;s position by taking it&rsquo;s offset from the offsets buffer and adding it to the strings buffer base address and that will give us the address of the string we are looking for. However we must not forget that the first four bytes of each string hold it&rsquo;s size, so in reality the actual content of the string begins four bytes after the string&rsquo;s address.</p>
-
-<pre><code class="language-c++">const char *
-StringPool::Get(int Index)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>
+StringPool<span style="color:#f92672">::</span>Get(<span style="color:#66d9ef">int</span> Index)
 {
-    if ((unsigned int)Index &lt; (unsigned int)Num)
+    <span style="color:#66d9ef">if</span> ((<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>)Index <span style="color:#f92672">&lt;</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>)Num)
     {
-        // The first four bytes are skipped, as they hold the string length
-        return Buffer + sizeof(unsigned int) + Offsets[Index];
+        <span style="color:#75715e">// The first four bytes are skipped, as they hold the string length
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> Buffer <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> Offsets[Index];
     }
-    return NULL;
-}
-</code></pre>
-
+    <span style="color:#66d9ef">return</span> NULL;
+}</code></pre></div>
 <p>We would also like to be able to do very simple string manipulation, and probably the simplest is concatenation. In order to concatenate two strings, we must first find a suitable space for the concatenated string in the <code>Buffer</code>. Sometimes this may be the position of the original string, in which case all that needs to be done is copying the string we want to append to the place immediatly after the original string&rsquo;s last character. But if that is not the case, then the whole concatenated string must be placed at the top of the <code>Buffer</code> and the offset must be updated accordingly.</p>
-
-<pre><code class="language-c++">void
-StringPool::Concatenate(int Index, const char * String)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">void</span>
+StringPool<span style="color:#f92672">::</span>Concatenate(<span style="color:#66d9ef">int</span> Index, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> String)
 {
-    unsigned int Len1 = Len(Index);
-    size_t Len2 = 0;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> Len1 <span style="color:#f92672">=</span> Len(Index);
+    size_t Len2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
 
-    if (String) Len2 = strlen(String);
-    if (Len2 == 0) return;
+    <span style="color:#66d9ef">if</span> (String) Len2 <span style="color:#f92672">=</span> strlen(String);
+    <span style="color:#66d9ef">if</span> (Len2 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">return</span>;
 
-    if (Index &gt;= Num) return;
+    <span style="color:#66d9ef">if</span> (Index <span style="color:#f92672">&gt;=</span> Num) <span style="color:#66d9ef">return</span>;
 
-    // If the original string is the empty string, just insert the new string
-    if (Len1 == 0)
+    <span style="color:#75715e">// If the original string is the empty string, just insert the new string
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (Len1 <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
     {
         Set(Index, String);
-        return;
+        <span style="color:#66d9ef">return</span>;
     }
 
-    const char * String1 = Get(Index);
+    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> String1 <span style="color:#f92672">=</span> Get(Index);
 
-    // Store the address of the original string
-    char * PreviousAddress = Buffer + Offsets[Index];
-    // Make space for the concatenated string
-    char * AddressInBuffer = Allocate(Index, Len1 + Len2);
+    <span style="color:#75715e">// Store the address of the original string
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> PreviousAddress <span style="color:#f92672">=</span> Buffer <span style="color:#f92672">+</span> Offsets[Index];
+    <span style="color:#75715e">// Make space for the concatenated string
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> AddressInBuffer <span style="color:#f92672">=</span> Allocate(Index, Len1 <span style="color:#f92672">+</span> Len2);
 
-    // Set the lenght of the concatenated string
-    *(unsigned int *)AddressInBuffer = (unsigned int)(Len1 + Len2);
-    // If the concatenated string does not fit in the original's position     
-    if (PreviousAddress != AddressInBuffer) 
+    <span style="color:#75715e">// Set the lenght of the concatenated string
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">*</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>)AddressInBuffer <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>)(Len1 <span style="color:#f92672">+</span> Len2);
+    <span style="color:#75715e">// If the concatenated string does not fit in the original&#39;s position     
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (PreviousAddress <span style="color:#f92672">!=</span> AddressInBuffer) 
     {
-        // Copy original string to new position
-        memcpy(AddressInBuffer + sizeof(unsigned int), String1, Len1);
+        <span style="color:#75715e">// Copy original string to new position
+</span><span style="color:#75715e"></span>        memcpy(AddressInBuffer <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>), String1, Len1);
     }
-    // Copy the other string to the appropriate position
-    memcpy(AddressInBuffer + sizeof(unsigned int) + Len1, String, Len2 + 1);
+    <span style="color:#75715e">// Copy the other string to the appropriate position
+</span><span style="color:#75715e"></span>    memcpy(AddressInBuffer <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> Len1, String, Len2 <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
 
-    if (OldBuffer)
+    <span style="color:#66d9ef">if</span> (OldBuffer)
     {
-        delete[] OldBuffer;
-        OldBuffer = 0;
+        <span style="color:#66d9ef">delete</span>[] OldBuffer;
+        OldBuffer <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
     }
-}
-</code></pre>
-
+}</code></pre></div>
 <p>We have gone through the interface functions of the class. By this, I mean that if all you wanted to do was use the <code>StringPool</code> class to store and manipulate your strings, then those three functions would be all you needed to keep in mind.</p>
 
 <p>Now it&rsquo;s time to look at the <code>private</code> auxiliary functions. We&rsquo;ll be looking at <code>Len</code> first. It&rsquo;s purpose is to find out the length of the string and it does that by looking at the number held in the first four bytes of the string in the strings buffer.</p>
-
-<pre><code class="language-c++">unsigned int
-StringPool::Len(int Index)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>
+StringPool<span style="color:#f92672">::</span>Len(<span style="color:#66d9ef">int</span> Index)
 {
-    if (Index &lt; Num)
+    <span style="color:#66d9ef">if</span> (Index <span style="color:#f92672">&lt;</span> Num)
     {
-        // Cast the address of the string to unsigned int to find the length
-	return *(unsigned int *)(Buffer + Offsets[Index]);
+        <span style="color:#75715e">// Cast the address of the string to unsigned int to find the length
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>)(Buffer <span style="color:#f92672">+</span> Offsets[Index]);
     }
-    return 0;
-}
-</code></pre>
-
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}</code></pre></div>
 <p>When trying to allocate a string to a number that is larger than the current <code>OffsetSize</code> the capacity of the <code>Offsets</code> buffer must be increased. The question is then how much larger should it become? Obviously it needs to increase in size as much as necessary to accomodate the newly inserted index. But other than that we must consider that if we increase the size by too little we risk having to increase the buffer&rsquo;s size again very soon, and that is expensive. On the other hand, if we increase the size too much we migth waste a lot of space. The compromise reached in the implementation of <code>ReserveNum</code> is to increase the size to more than double the current value.</p>
-
-<pre><code class="language-c++">
-void
-StringPool::ReserveNum(unsigned int Size)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">void</span>
+StringPool<span style="color:#f92672">::</span>ReserveNum(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> Size)
 {
-    if (Size &lt; OffsetsSize) return;
+    <span style="color:#66d9ef">if</span> (Size <span style="color:#f92672">&lt;</span> OffsetsSize) <span style="color:#66d9ef">return</span>;
 
-    // Make sure the new size is at least double the current size
-    if (Size &lt; OffsetsSize * 2 + AllocateSpaceOffsets)
+    <span style="color:#75715e">// Make sure the new size is at least double the current size
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (Size <span style="color:#f92672">&lt;</span> OffsetsSize <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">+</span> AllocateSpaceOffsets)
     {
-	Size = OffsetsSize * 2 + AllocateSpaceOffsets;
+	Size <span style="color:#f92672">=</span> OffsetsSize <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">+</span> AllocateSpaceOffsets;
     }
 
-    // Allocate the new offsets buffer
-    unsigned int * Offsets2 = new unsigned int[Size];
+    <span style="color:#75715e">// Allocate the new offsets buffer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span> Offsets2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>[Size];
 
-    // Copy the old buffer contents to the new buffer
-    if (Offsets) memcpy(Offsets2, Offsets, OffsetsSize * sizeof(*Offsets));
-    // Set all the remaining positions to zero
-    memset(Offsets2 + OffsetsSize, 0, (Size - OffsetsSize) * sizeof(*Offsets2));
+    <span style="color:#75715e">// Copy the old buffer contents to the new buffer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (Offsets) memcpy(Offsets2, Offsets, OffsetsSize <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span>Offsets));
+    <span style="color:#75715e">// Set all the remaining positions to zero
+</span><span style="color:#75715e"></span>    memset(Offsets2 <span style="color:#f92672">+</span> OffsetsSize, <span style="color:#ae81ff">0</span>, (Size <span style="color:#f92672">-</span> OffsetsSize) <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span>Offsets2));
 
-    // Delete the old offsets buffer
-    if (Offsets) delete[] Offsets;
+    <span style="color:#75715e">// Delete the old offsets buffer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (Offsets) <span style="color:#66d9ef">delete</span>[] Offsets;
 
-    Offsets = Offsets2;
-    OffsetsSize = Size;
-}
-</code></pre>
-
+    Offsets <span style="color:#f92672">=</span> Offsets2;
+    OffsetsSize <span style="color:#f92672">=</span> Size;
+}</code></pre></div>
 <p>We&rsquo;ve seen before that when inserting a string in the pool we must first find a space in the memory block where it will fit. That is what <code>Allocate</code> is for. The simplest case is when trying to insert a string identified by a number that has not been used before. In that case all that we need to do is to make sure that there is enough space at the top of the buffer to insert the string, and if there is not then make some space for it.</p>
 
 <p>But if the number has been used (we are reassigning the number to another string) it may not be so simple. First we should check if there is enough space in the position of the old string to hold the new one. If there is then that space can be reused, and the offset value for that number remains the same. But if there isn&rsquo;t then space must be made at the top of the buffer and the offset value must be updated accordingly. Additionaly, the string that was previously associated with the number should be marked as trash.</p>
-
-<pre><code class="language-c++">char *
-StringPool::Allocate(int Index, unsigned int Strlen)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>
+StringPool<span style="color:#f92672">::</span>Allocate(<span style="color:#66d9ef">int</span> Index, <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> Strlen)
 {
-    // If the index has been used previously
-    if (Offsets[Index])
+    <span style="color:#75715e">// If the index has been used previously
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (Offsets[Index])
     {
-        // If it is the highest used index so far
-	if (Offsets[Index] == Top)
+        <span style="color:#75715e">// If it is the highest used index so far
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> (Offsets[Index] <span style="color:#f92672">==</span> Top)
 	{
-	    // Make space for the string at the top of the buffer
-            if (Top + sizeof(unsigned int) + Strlen + 1 &gt; BufferSize)
+	    <span style="color:#75715e">// Make space for the string at the top of the buffer
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (Top <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> Strlen <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&gt;</span> BufferSize)
 	    {
-		ReserveBuf(Top + sizeof(unsigned int) + Strlen + 1);
+		ReserveBuf(Top <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> Strlen <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
 	    }
-	    DataSize = Top + sizeof(unsigned int) + Strlen + 1;
-	    return Buffer + Top;
+	    DataSize <span style="color:#f92672">=</span> Top <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> Strlen <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+	    <span style="color:#66d9ef">return</span> Buffer <span style="color:#f92672">+</span> Top;
 	}
-	// Reuse the space taken by the old string if possible
-	unsigned int OldLen = Len(Index);
-	if (OldLen &gt;= Strlen)
+	<span style="color:#75715e">// Reuse the space taken by the old string if possible
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> OldLen <span style="color:#f92672">=</span> Len(Index);
+	<span style="color:#66d9ef">if</span> (OldLen <span style="color:#f92672">&gt;=</span> Strlen)
 	{
-	    GarbageSize += OldLen - Strlen;
-	    return Buffer + Offsets[Index];
+	    GarbageSize <span style="color:#f92672">+=</span> OldLen <span style="color:#f92672">-</span> Strlen;
+	    <span style="color:#66d9ef">return</span> Buffer <span style="color:#f92672">+</span> Offsets[Index];
 	}
-	GarbageSize += OldLen + sizeof(unsigned int) + 1;
+	GarbageSize <span style="color:#f92672">+=</span> OldLen <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
     }
-    // Otherwise make space for the string at the top of the buffer
-    if (DataSize + sizeof(unsigned int) + Strlen + 1 &gt; BufferSize)
+    <span style="color:#75715e">// Otherwise make space for the string at the top of the buffer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (DataSize <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> Strlen <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&gt;</span> BufferSize)
     {
-	ReserveBuf(DataSize + sizeof(unsigned int) + Strlen + 1);
+	ReserveBuf(DataSize <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> Strlen <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
     }
-    Offsets[Index] = Top = DataSize;
-    DataSize += sizeof(unsigned int) + Strlen + 1;
-    return Buffer + Top;
-}
-</code></pre>
-
+    Offsets[Index] <span style="color:#f92672">=</span> Top <span style="color:#f92672">=</span> DataSize;
+    DataSize <span style="color:#f92672">+=</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> Strlen <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+    <span style="color:#66d9ef">return</span> Buffer <span style="color:#f92672">+</span> Top;
+}</code></pre></div>
 <p>When the strings buffer runs out of space it&rsquo;s size needs to be increased. That is done by calling <code>ReserveBuf</code>. As with <code>ReserveNum</code> the amount by which to increase the buffer size must be carefully considered. And again we opt by at least doubling the size every time we need to resize the <code>Buffer</code>.</p>
-
-<pre><code class="language-c++">void
-StringPool::ReserveBuf(unsigned int Size)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">void</span>
+StringPool<span style="color:#f92672">::</span>ReserveBuf(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> Size)
 {
-    // Make sure that the new size is at least double the old size
-    if (Size &lt; (DataSize - GarbageSize) * 2 + AllocateSpaceBuffer)
+    <span style="color:#75715e">// Make sure that the new size is at least double the old size
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (Size <span style="color:#f92672">&lt;</span> (DataSize <span style="color:#f92672">-</span> GarbageSize) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">+</span> AllocateSpaceBuffer)
     {
-	Size = (DataSize - GarbageSize) * 2 + AllocateSpaceBuffer;
+	Size <span style="color:#f92672">=</span> (DataSize <span style="color:#f92672">-</span> GarbageSize) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">+</span> AllocateSpaceBuffer;
     }
 
-    // Create the new buffer
-    char * Buffer2 = new char[Size + sizeof(unsigned int) + 1];
-    // Make the first position in the buffer the empty string
-    *(unsigned int *)Buffer2 = 0;
-    Buffer2[sizeof(unsigned int)] = 0;
-    int DataSize2 = Top = sizeof(unsigned int) + 1;
+    <span style="color:#75715e">// Create the new buffer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> Buffer2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">char</span>[Size <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>];
+    <span style="color:#75715e">// Make the first position in the buffer the empty string
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">*</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>)Buffer2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    Buffer2[<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>)] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#66d9ef">int</span> DataSize2 <span style="color:#f92672">=</span> Top <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
 
-    // Copy the old buffer into the new buffer
-    if (Buffer)
+    <span style="color:#75715e">// Copy the old buffer into the new buffer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (Buffer)
     {
-	for (int i = 0; i &lt; Num; i++)
+	<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> Num; i<span style="color:#f92672">++</span>)
 	{
-            if (Offsets[i])
+            <span style="color:#66d9ef">if</span> (Offsets[i])
 	    {
-	        unsigned int Strlen = Len(i);
- 	        if (Strlen)
+	        <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> Strlen <span style="color:#f92672">=</span> Len(i);
+ 	        <span style="color:#66d9ef">if</span> (Strlen)
 	        {
-		    memcpy(Buffer2 + DataSize2,
-		           Buffer + Offsets[i],
-			   Strlen + sizeof(unsigned int) + 1);
-		    Offsets[i] = Top = DataSize2;
-		    DataSize2 += Strlen + sizeof(unsigned int) + 1;
+		    memcpy(Buffer2 <span style="color:#f92672">+</span> DataSize2,
+		           Buffer <span style="color:#f92672">+</span> Offsets[i],
+			   Strlen <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+		    Offsets[i] <span style="color:#f92672">=</span> Top <span style="color:#f92672">=</span> DataSize2;
+		    DataSize2 <span style="color:#f92672">+=</span> Strlen <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
 	        }
-	        else
+	        <span style="color:#66d9ef">else</span>
 	        {
-		    Offsets[i] = 0;
-		    GarbageSize += sizeof(unsigned int) + 1;
+		    Offsets[i] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+		    GarbageSize <span style="color:#f92672">+=</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
 	        }
 	    }
         }
-	// Save the old buffer in case some strings are being copied
-        OldBuffer = Buffer;
+	<span style="color:#75715e">// Save the old buffer in case some strings are being copied
+</span><span style="color:#75715e"></span>        OldBuffer <span style="color:#f92672">=</span> Buffer;
     }
 
-    // Save the new buffer
-    Buffer = Buffer2;
-    BufferSize = Size + sizeof(unsigned int) + 1;
+    <span style="color:#75715e">// Save the new buffer
+</span><span style="color:#75715e"></span>    Buffer <span style="color:#f92672">=</span> Buffer2;
+    BufferSize <span style="color:#f92672">=</span> Size <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
 
-    DataSize = DataSize2;
-    GarbageSize = 0;
-}
-</code></pre>
-
-<p>And that is all there is to the implementation. I&rsquo;ve deliberately kept it very simple, but there are a lot of ways to improve it. We could, for instance, overload the assignment operator so that we could insert strings without calling <code>Set</code>. Like I&rsquo;ve mentioned before, if you are looking for a safer and more complete version of a <code>StringPool</code> go check the <a href="http://www.agner.org/optimize/optimizing_cpp.pdf"><em>&ldquo;Optimizing Software in C++&rdquo;</em></a> manual for the examples that come with it.</p>
+    DataSize <span style="color:#f92672">=</span> DataSize2;
+    GarbageSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+}</code></pre></div>
+<p>And that is all there is to the implementation. I&rsquo;ve deliberately kept it very simple, but there are a lot of ways to improve it. We could, for instance, overload the assignment operator so that we could insert strings without calling <code>Set</code>. Like I&rsquo;ve mentioned before, if you are looking for a safer and more complete version of a <code>StringPool</code> go check the <a href="http://www.agner.org/optimize/optimizing_cpp.pdf" target="_blank"><em>&ldquo;Optimizing Software in C++&rdquo;</em></a> manual for the examples that come with it.</p>
 
 <h2 id="benchmarks">Benchmarks</h2>
 
 <p>We&rsquo;ve been through the teorethical speed improvements that a memory pool for strings provide over the standard <code>std::string</code>, but now it&rsquo;s time to put that to the test and see if they hold up in practice. The benchmarks we&rsquo;ll be focusing on are not super strict and rigourous, but they are enough to give us an ideia of the differences in speed between the implementations. Furthermore, we&rsquo;ll only be focusing on how fast the code is executed, and not on other factors like memory usage.</p>
 
 <p>So let&rsquo;s begin by testing the assignment speed. We expect <code>std::string</code> to be slower because it is necessary to allocate space for each string individually, while the <code>StringPool</code> allocates space for many strings at once. To test this we&rsquo;ll be assigning one million <code>std::string</code> and then inserting one million strings into the pool.</p>
-
-<pre><code class="language-c++">auto begin = std::chrono::system_clock::now();
-for (int i = 0; i &lt; 1000000; i++)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">auto</span> begin <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>system_clock<span style="color:#f92672">::</span>now();
+<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1000000</span>; i<span style="color:#f92672">++</span>)
 {
-    std::string Str = &quot;abcdefghijklmnopqrstuvwxyz0123456789&quot;;
+    std<span style="color:#f92672">::</span>string Str <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;abcdefghijklmnopqrstuvwxyz0123456789&#34;</span>;
 }
-auto end = std::chrono::system_clock::now();
-printf(&quot;\tstd::string took %f seconds\n&quot;, std::chrono::duration&lt;double&gt;(end - begin).count());
+<span style="color:#66d9ef">auto</span> end <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>system_clock<span style="color:#f92672">::</span>now();
+printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">std::string took %f seconds</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>duration<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">double</span><span style="color:#f92672">&gt;</span>(end <span style="color:#f92672">-</span> begin).count());
 
-begin = std::chrono::system_clock::now();
+begin <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>system_clock<span style="color:#f92672">::</span>now();
 StringPool Strings;
-for (int i = 0; i &lt; 1000000; i++)
+<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1000000</span>; i<span style="color:#f92672">++</span>)
 {
-    Strings.Set(i, &quot;abcdefghijklmnopqrstuvwxyz0123456789&quot;);
+    Strings.Set(i, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;abcdefghijklmnopqrstuvwxyz0123456789&#34;</span>);
 }
-end = std::chrono::system_clock::now();
-printf(&quot;\tStringPool took %f seconds\n&quot;, std::chrono::duration&lt;double&gt;(end - begin).count());
-</code></pre>
-
+end <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>system_clock<span style="color:#f92672">::</span>now();
+printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">StringPool took %f seconds</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>duration<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">double</span><span style="color:#f92672">&gt;</span>(end <span style="color:#f92672">-</span> begin).count());</code></pre></div>
 <p>On my machine it takes <code>5.707221</code> seconds to allocate one million <code>std::strings</code>, while it only takes <code>0.189685</code> seconds to insert a million strings into the <code>StringPool</code>. This means that using memory pool is roughly 30 times faster than the alternative, which is a significant improvement.</p>
 
 <p>Now let&rsquo;s take a look at the difference in speed for string concatenation. Again we expect the <code>StringPool</code> to be faster because of the reduced number of allocations, at the expense of potentially a lot of wasted memory. In order to test this we&rsquo;ll be using the <code>+=</code> operator to concatenate <code>std::strings</code> since it avoids allocating a new string to hold the result of the concatenation, and thus is faster than the <code>+</code> operator.</p>
-
-<pre><code class="language-c++">auto begin = std::chrono::system_clock::now();
-std::string Str = &quot;abcdefghijklmnopqrstuvwxyz0123456789&quot;;
-for (int i = 0; i &lt; 1000000; i++)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">auto</span> begin <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>system_clock<span style="color:#f92672">::</span>now();
+std<span style="color:#f92672">::</span>string Str <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;abcdefghijklmnopqrstuvwxyz0123456789&#34;</span>;
+<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1000000</span>; i<span style="color:#f92672">++</span>)
 {
-    Str += &quot;abcdefghijklmnopqrstuvwxyz0123456789&quot;;
+    Str <span style="color:#f92672">+=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;abcdefghijklmnopqrstuvwxyz0123456789&#34;</span>;
 }
-auto end = std::chrono::system_clock::now();
-printf(&quot;\tstd::string took %f seconds\n&quot;, std::chrono::duration&lt;double&gt;(end - begin).count());
+<span style="color:#66d9ef">auto</span> end <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>system_clock<span style="color:#f92672">::</span>now();
+printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">std::string took %f seconds</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>duration<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">double</span><span style="color:#f92672">&gt;</span>(end <span style="color:#f92672">-</span> begin).count());
 
-begin = std::chrono::system_clock::now();
+begin <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>system_clock<span style="color:#f92672">::</span>now();
 StringPool Strings;
-Strings.Set(0, &quot;abcdefghijklmnopqrstuvwxyz0123456789&quot;);
-for (int i = 0; i &lt; 1000000; i++)
+Strings.Set(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;abcdefghijklmnopqrstuvwxyz0123456789&#34;</span>);
+<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1000000</span>; i<span style="color:#f92672">++</span>)
 {
-    Strings.Concatenate(0, &quot;abcdefghijklmnopqrstuvwxyz0123456789&quot;);
+    Strings.Concatenate(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;abcdefghijklmnopqrstuvwxyz0123456789&#34;</span>);
 }
-end = std::chrono::system_clock::now();
-printf(&quot;\tStringPool took %f seconds\n&quot;, std::chrono::duration&lt;double&gt;(end - begin).count());
-</code></pre>
-
+end <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>system_clock<span style="color:#f92672">::</span>now();
+printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">StringPool took %f seconds</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, std<span style="color:#f92672">::</span>chrono<span style="color:#f92672">::</span>duration<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">double</span><span style="color:#f92672">&gt;</span>(end <span style="color:#f92672">-</span> begin).count());</code></pre></div>
 <p>It takes <code>1.114395</code> seconds on my machine to concatenate the <code>std::strings</code>, but only <code>0.197553</code> to concatenate the strings in the <code>StringPool</code>. This means that the memory pool in this case is about 5.5 times faster. Altough not as drastic an speed up as in the allocation case, it is still much faster. However, it is important to note that this is the best case for the <code>StringPool</code> because the string that we are appending to is at the top of the buffer and can freely grow until the buffer runs out of space, at which point it&rsquo;s size is increased and the string is copied over to the top of the new buffer. If this was not the case, the original string would need to be copied over to a new position in the buffer where the concatenated string would fit, slowing down the process a little bit.</p>
 
 <h2 id="conclusion">Conclusion</h2>
 
 <p>We&rsquo;ve seen that allocating a memory block and managing it ourselves may speed up our program dramatically, at the cost of programming time and added complexity. So, while memory pools can be a powerful thing, the decision to use them should take into account a number of factors like the amount of objects we are dealing with and the necessity for performance of the program. In programs dealing with small amounts of objects the speed up is negligeble, and thus there are probably better ways to optimize our code for speed. In the end, it is just another tool  that we should be aware of so we can use it in the appropriate situations.</p>
 
-<p>The source code for this post can be found <a href="https://gist.github.com/joaosilva22/b66337b41487ee11827f17cedca7fe40">here</a>.</p>
+<p>The source code for this post can be found <a href="https://gist.github.com/joaosilva22/b66337b41487ee11827f17cedca7fe40" target="_blank">here</a>.</p>
 
-	<nav>
-	
-	
-	</nav>
-</article>
-			<hr class="sep" />
-		</main>
-		<footer class="container">
-			<div class="u-footer">
-				
-<a href="mailto:j.pedro004@gmail.com"><img class="icon-social" src="/img/email.svg" alt="Email Me!"/></a>
+</div>
+
+    
+<footer class='entry-footer-container'>
+  <div class='entry-footer'>
+  
+  </div>
+</footer>
 
 
-<a href="https://github.com/joaosilva22/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+  </article>
+  
+  
+</main>
 
+    <footer id='footer' class='footer-container'>
+      <div class='footer'>
+        <div class='social-menu-container'>
+  <nav aria-label='Social Menu'>
+    <ul class='social-menu'><li>
+        <a href='https://github.com/joaosilva22' target='_blank' rel='noopener'>
+          <span class='screen-reader'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://twitter.com/joaopsilva22' target='_blank' rel='noopener'>
+          <span class='screen-reader'>Open Twitter account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:j.pedro004@gmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/joaosilva22' target='_blank' rel='noopener'>
+          <span class='screen-reader'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path stroke-width="1.8" d="m5.839218,4.101561c0,1.211972 -0.974141,2.194011 -2.176459,2.194011s-2.176459,-0.982039 -2.176459,-2.194011c0,-1.211094 0.974141,-2.194011 2.176459,-2.194011s2.176459,0.982917 2.176459,2.194011zm0.017552,3.94922l-4.388022,0l0,14.04167l4.388022,0l0,-14.04167zm7.005038,0l-4.359939,0l0,14.04167l4.360816,0l0,-7.370999c0,-4.098413 5.291077,-4.433657 5.291077,0l0,7.370999l4.377491,0l0,-8.89101c0,-6.915523 -7.829986,-6.66365 -9.669445,-3.259423l0,-1.891237z"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</div>
+        <div class='copyright'>
+  <p>
+        
+      
 
-<a href="https://twitter.com/joaopsilva22"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+       &copy; 2017 MunifTanjim 
+  </p>
+</div>
 
-<a href="https://joaosilva22.github.io/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+      </div>
+    </footer>
 
-				<p>
-					
-					Theme used: <a href="https://github.com/yursan9/manis-hugo-theme">Manis</a><br>
-					
-					
-					&copy; 2017 João Pedro Silva
-					
-					
-				</p>
-				
-				<a href="#">
-					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
-					<span>Back to Up</span>
-				</a>
-				
-			</div>
-		</footer>
-		
-		<script>hljs.initHighlightingOnLoad();</script>
-		
-	</body>
+  </div><script src='/assets/js/main.5871befd.js'></script><script src='/js/custom.js'></script></body>
+
 </html>
 
