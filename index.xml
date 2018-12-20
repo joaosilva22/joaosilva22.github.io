@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>João Pedro Silva</title>
-    <link>https://joaosilva22.github.io/</link>
-    <description>Recent content on João Pedro Silva</description>
+    <title>My New Hugo Site</title>
+    <link>http://example.org/</link>
+    <description>Recent content on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 07 Sep 2017 07:40:00 +0100</lastBuildDate>
+    <language>en-us</language>
     
-	<atom:link href="https://joaosilva22.github.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Using a Memory Pool to Speed Up String Manipulation</title>
-      <link>https://joaosilva22.github.io/blog/memory-pool/</link>
-      <pubDate>Thu, 07 Sep 2017 07:40:00 +0100</pubDate>
-      
-      <guid>https://joaosilva22.github.io/blog/memory-pool/</guid>
-      <description>Lately I&amp;rsquo;ve been trying to learn more about code optimization, specifically how to make code faster. I&amp;rsquo;ve been doing this partly out of frustration from having to deal with slow software on a daily basis, and partly out of curiosity after listening to a bunch of talks and lectures about it by a lot of smart people.
-In my research I came accross Agner Fog&amp;rsquo;s Software Optimization Resources, and I&amp;rsquo;ve been slowly making my way through the listed manuals.</description>
-    </item>
     
   </channel>
 </rss>
