@@ -6,10 +6,20 @@
     <description>Recent content in Posts on João Silva</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 20 Dec 2018 15:14:42 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 02 Jan 2019 15:38:19 +0100</lastBuildDate>
     
 	<atom:link href="http://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>New Year 2019</title>
+      <link>http://example.org/posts/new-year-2019/</link>
+      <pubDate>Wed, 02 Jan 2019 15:38:19 +0100</pubDate>
+      
+      <guid>http://example.org/posts/new-year-2019/</guid>
+      <description>2018 has been a good year, both from a professional and a personal stand-point. But there is always room for improvement, so this is what I hope to achieve in 2019:
+ Read at least one book per month. This one shouldn&amp;rsquo;t be too hard. I think I read around 7-8 books in 2018, though it&amp;rsquo;s hard to tell because I haven&amp;rsquo;t been keeping track. So an additional goal for 2019 is also to track the books that I read throughout the year.</description>
+    </item>
     
     <item>
       <title>Deep Work</title>
