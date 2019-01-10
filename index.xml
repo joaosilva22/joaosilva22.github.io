@@ -6,10 +6,21 @@
     <description>Recent content on João Silva</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 02 Jan 2019 15:38:19 +0100</lastBuildDate>
+    <lastBuildDate>Thu, 10 Jan 2019 18:50:34 +0100</lastBuildDate>
     
 	<atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Binary Exponentiation</title>
+      <link>http://example.org/posts/binary-exponentiation/</link>
+      <pubDate>Thu, 10 Jan 2019 18:50:34 +0100</pubDate>
+      
+      <guid>http://example.org/posts/binary-exponentiation/</guid>
+      <description>Binary exponentiation, also known as exponentiation-by-squaring, is a fast method to compute powers of a number.
+The algorithm looks like this:
+ $$ x^{n} = \begin{cases} x(x^2)^{\frac{n-1}{2}}, &amp; \text{if } n \text{ is odd} \\\ (x^2)^{\frac{n}{2}}, &amp; \text{if } n \text{ is even} \end{cases} $$  But why does this work? Well, the idea behind this method is exploiting some of the properties of its binary representation to do less work.</description>
+    </item>
     
     <item>
       <title>New Year 2019</title>
@@ -27,8 +38,8 @@
       <pubDate>Thu, 20 Dec 2018 15:14:42 +0100</pubDate>
       
       <guid>http://example.org/posts/deep-work/</guid>
-      <description>&amp;ldquo;Deep Work: Professional activities performed in a state of distraction-free concentration that push your cognitive capabilities to their limit. These efforts create new value, improve your skill, and are hard to replicate.&amp;rdquo;
-I&amp;rsquo;ve just read Deep Work by Cal Newport, in which he makes a convincing case for the value of doing deep work, not only to further one&amp;rsquo;s career but to live a better life.
+      <description>Deep Work: Professional activities performed in a state of distraction-free concentration that push your cognitive capabilities to their limit. These efforts create new value, improve your skill, and are hard to replicate.
+ I&amp;rsquo;ve just read Deep Work by Cal Newport, in which he makes a convincing case for the value of doing deep work, not only to further one&amp;rsquo;s career but to live a better life.
 My main takeaway from it is that deep work requires absolute concentration, and that is best achieved blocking some hours of the day to work deeply with no distractions; no e-mail, no Hacker News, no phone.</description>
     </item>
     

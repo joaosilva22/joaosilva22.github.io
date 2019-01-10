@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131212055-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-131212055-1');
+    </script>
+
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Binary Exponentiation | João Silva</title>
+</head>
+<body>
+
+
+<header>
+    <a class="post__home" href="/">Home</a>
+	  <h1 class="post__title">Binary Exponentiation</h1>
+    <p class="post__date">Jan 10, 2019 &middot; 2 min read</p>
+
+</header>
+
+<main class="post__main">
+    <p>Binary exponentiation, also known as <strong>exponentiation-by-squaring</strong>, is a fast method to compute powers of a number.</p>
+
+<p>The algorithm looks like this:</p>
+
+<div>
+$$
+x^{n} = \begin{cases} 
+          x(x^2)^{\frac{n-1}{2}}, & \text{if } n \text{ is odd} \\\
+          (x^2)^{\frac{n}{2}}, & \text{if } n \text{ is even} 
+       \end{cases}
+$$
+</div>
+
+<p>But why does this work? Well, the idea behind this method is exploiting some of the properties of its binary representation to do less work.</p>
+
+<p>Let&rsquo;s demonstrate through an example. We&rsquo;ll take the number \(4^{11}\) and write the exponent in its binary representation.</p>
+
+<p>$$ 4^{11} = 4^{1011_2} $$</p>
+
+<p>The binary representation of a number \(n\) has exactly \(\lfloor log_2 n \rfloor + 1\) digits. This means that we can write our number as a product with \(log_2 n\) factors.</p>
+
+<p>$$ 4^{1011_2} = 4^{1000_2} \times 4^{000_2} \times 4^{10_2} \times 4^{1_2} = 4^{8} \times 4^{2} \times 4^{1}$$</p>
+
+<p>This doesn&rsquo;t look like much, but remember that \(x\) to the power of \(n\) is defined as multiplying \(x\) by itself \(n - 1\) times. So we&rsquo;ve gone from needing \(n-1\) multiplications to just \(log_2 n\).</p>
+
+<p>Of course, we need to calculate the terms (\(x^{1}, x^{2}, x^{4}, x^{8}, &hellip;, x^{\lfloor log_2 n\rfloor}\)) themselves. Fortunately, there is a trick we can use: each element in the sequence is the square of the previous element.</p>
+
+<p>$$ 4^1 = 4  $$
+$$ 4^2 = (4^1)^2 = 4^2 = 16 $$
+$$ 4^4 = (4^2)^2 = 8^2 = 256 $$
+$$ 4^8 = (4^4)^2 = 64^2 = 65536 $$</p>
+
+<p>So, to finish our example let&rsquo;s calculate the final result.</p>
+
+<p>$$ 4^{11} = 65536 \times 16 \times 4 = 4194304 $$</p>
+
+<p>And that&rsquo;s it! As we&rsquo;ve seen, the complexity of this algorithm to compute \(x^n\) is \(O(log n)\) (as \(log n\) is the number of powers of \(x\) and multiplications we need to calculate).</p>
+
+<p>This is faster than the naive approach for large values of \(n\), and why this method is so useful in many areas of computation.</p>
+
+</main>
+
+<footer>
+    <a class="post__home" href="/">Home</a>
+</footer>
+
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_CHTML">
+</script>
+
+</body>
+</html>
+
