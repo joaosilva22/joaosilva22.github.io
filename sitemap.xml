@@ -18,6 +18,12 @@
   </url>
   
   <url>
+    <loc>http://example.org/tags/algorithms/</loc>
+    <lastmod>2019-01-10T18:50:34+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://example.org/categories/</loc>
     <priority>0</priority>
   </url>
@@ -30,12 +36,6 @@
   
   <url>
     <loc>http://example.org/posts/</loc>
-    <lastmod>2019-01-10T18:50:34+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.org/tags/security-math-compsci/</loc>
     <lastmod>2019-01-10T18:50:34+01:00</lastmod>
     <priority>0</priority>
   </url>
