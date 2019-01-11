@@ -3,6 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://example.org/about/</loc>
+    <lastmod>2019-01-11T10:34:25+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://example.org/</loc>
+    <lastmod>2019-01-11T10:04:41+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://example.org/posts/binary-exponentiation/</loc>
     <lastmod>2019-01-10T18:50:34+01:00</lastmod>
   </url>
@@ -25,12 +35,6 @@
   
   <url>
     <loc>http://example.org/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.org/</loc>
-    <lastmod>2019-01-10T18:50:34+01:00</lastmod>
     <priority>0</priority>
   </url>
   
