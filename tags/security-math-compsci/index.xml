@@ -19,7 +19,7 @@
       <guid>http://example.org/posts/binary-exponentiation/</guid>
       <description>Binary exponentiation, also known as exponentiation by squaring, is a fast method to compute powers of a number.
 The algorithm looks like this:
- $$ x^{n} = \begin{cases} x(x^2)^{\frac{n-1}{2}}, &amp; \text{if } n \text{ is odd} \\\ (x^2)^{\frac{n}{2}}, &amp; \text{if } n \text{ is even} \end{cases} $$  But why does this work? Well, the idea behind this method is exploiting some of the properties of its binary representation to do less work.</description>
+ $$ x^{n} = \begin{cases} x(x^2)^{\frac{n-1}{2}}, &amp; \text{if } n \text{ is odd} \\\ (x^2)^{\frac{n}{2}}, &amp; \text{if } n \text{ is even} \end{cases} $$  But why does this work? Well, the idea behind this method is exploiting the binary representation of the exponent to do less work.</description>
     </item>
     
   </channel>
