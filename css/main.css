@@ -2,26 +2,52 @@ body {
     margin: 10px auto;
     max-width: 650px;
     line-height: 1.6;
-    font-size: 17px;
+    font-size: 16px;
     color: #444;
     padding: 0 10px;
 }
 
-.post__home {
-    font-size: 16px;
-    margin: 0;
-    color: #444;
+/* Single pages */
+
+.post__main {
+    padding: 15px 0;
 }
 
-.post__title {
+.post__main h1 {
+    margin: 0;
+}
+
+.post__main p {
+    margin-top: 0;
+}
+
+/* List pages */
+
+.list__header {
+    border-bottom: 1px solid #444;
+}
+
+.list__header h1 {
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: lowercase;
     margin-bottom: 0;
 }
 
-.post__date {
-    margin-top: 0;
-    margin-bottom: 2em;
+.list__header h1 span {
+    float: right;
 }
 
-.post__main {
-    padding-bottom: 20px;
+.list__main__date {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.list__footer {
+    text-align: center;
+    border-top: 1px solid #444;
+}
+
+.list__footer p {
+    margin: 0;
 }
